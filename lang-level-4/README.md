@@ -80,6 +80,6 @@ simplifying writing rules for matching multiple languages.
 
 ## Issues with current tests
 
-After the [proposed CL](https://chromium-review.googlesource.com/c/chromium/src/+/3515958), the following test fails: [third_party/blink/web_tests/external/wpt/css/selectors/i18n/css3-selectors-lang-014.html](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/external/wpt/css/selectors/i18n/css3-selectors-lang-014.html)
+After the [proposed CL](https://chromium-review.googlesource.com/c/chromium/src/+/3515958), the following test fails: [third_party/blink/web_tests/external/wpt/css/selectors/i18n/css3-selectors-lang-014.html](https://source.chromium.org/chromium/chromium/src/+/084f128497aa57134c6fbc40d7715cfaf3298251:third_party/blink/web_tests/external/wpt/css/selectors/i18n/css3-selectors-lang-014.html)
 
 This happens because of the previous expectations of prefix matching and it's already [solved on the above CL](https://chromium-review.googlesource.com/c/chromium/src/+/3515958/9/third_party/blink/web_tests/external/wpt/css/selectors/i18n/css4-selectors-lang-001.html), and will work on [Safari](https://webkit.org/status/#feature-css-selector-:lang()-level-4) but will fail on current Firefox. I plan to prepare a change for Firefox browser as well.
