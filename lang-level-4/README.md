@@ -62,7 +62,7 @@ p:lang(en, fr, de) {
 instead of forcing the developer to write:
 
 ```
-p:lang(en, fr, de) {
+p:lang(en) {
   background-color: yellow;
 }
 
