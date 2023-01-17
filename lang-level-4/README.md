@@ -1,11 +1,11 @@
 ## Overview
 
 The current language :lang pseudo-class implementation is based on the [Selectors Level 3](https://www.w3.org/TR/2018/REC-selectors-3-20181106/#lang-pseudo) 
-and accepts only one identifier as an argument for matching the element's language value.
+and accepts only one identifier as an argument for matching an element's language value.
 
 [Level 4](https://www.w3.org/TR/selectors-4/#the-lang-pseudo) specs proposes a change in this behavior to accepting a comma-separated argument list of
 [Language-Ranges](https://www.rfc-editor.org/rfc/rfc4647.html#section-2) and performs the [extended filtering operation](https://www.rfc-editor.org/rfc/rfc4647.html#section-3.3.2) 
-to match language values.
+to match the language values.
 
 ## Details
 
@@ -19,6 +19,8 @@ From the level 3 specs:
 This means that that only elements where its lang value is equal to C or C is a *prefix* of its lang value are matched.
 
 For example:
+
+#### Example 1
 
 ```
 p:lang(de-DE) {
@@ -41,9 +43,14 @@ but not
 <p lang="de-Deva-DE">lang=de-Deva-DE</p>
 ```
 
+### Extended filtering and implicit wildcard matching
+
 The main change on matching logic in Level 4 specs is that now those would also be matched, as the matching logic now
 changes from a simple prefix matching to an [extended filtering operation](https://www.rfc-editor.org/rfc/rfc4647.html#section-3.3.2) where
-an implicicit wildcard matching occurs (meaning that de-DE is the same as de-*-DE).
+an implicit wildcard matching occurs (meaning that de-DE is the same as de-*-DE).
+
+
+This means that all of the paragraphs from [the first example](#example-1), would be matched by the ```p:lang(de-DE)``` selector.
 
 Also, according to the new specs, instead of an identifier, :lang now takes an argument list. From the [new specs](https://www.w3.org/TR/selectors-4/#the-lang-pseudo):
 
@@ -53,33 +60,26 @@ Also, according to the new specs, instead of an identifier, :lang now takes an a
 
 So, now the following is going to be possible:
 
+#### Example 2
+
 ```
 p:lang(en, fr, de) {
   background-color: yellow;
 }
 ```
 
-instead of forcing the developer to write:
-
-```
-p:lang(en) {
-  background-color: yellow;
-}
-
-p:lang(fr) {
-  background-color: yellow;
-}
-
-p:lang(de) {
-  background-color: yellow;
-}
-
-```
-
 simplifying writing rules for matching multiple languages.
 
-## Issues with current tests
+## Issues
 
-After the [proposed CL](https://chromium-review.googlesource.com/c/chromium/src/+/3515958), the following test fails: [third_party/blink/web_tests/external/wpt/css/selectors/i18n/css3-selectors-lang-014.html](https://source.chromium.org/chromium/chromium/src/+/084f128497aa57134c6fbc40d7715cfaf3298251:third_party/blink/web_tests/external/wpt/css/selectors/i18n/css3-selectors-lang-014.html)
+After the [proposed CL](https://chromium-review.googlesource.com/c/chromium/src/+/3515958), the following test would fail: [third_party/blink/web_tests/external/wpt/css/selectors/i18n/css3-selectors-lang-014.html](https://source.chromium.org/chromium/chromium/src/+/084f128497aa57134c6fbc40d7715cfaf3298251:third_party/blink/web_tests/external/wpt/css/selectors/i18n/css3-selectors-lang-014.html).
 
-This happens because of the previous expectations of prefix matching and it's already [solved on the above CL](https://chromium-review.googlesource.com/c/chromium/src/+/3515958/9/third_party/blink/web_tests/external/wpt/css/selectors/i18n/css4-selectors-lang-001.html), and will work on [Safari](https://webkit.org/status/#feature-css-selector-:lang()-level-4) but will fail on current Firefox. I plan to prepare a change for Firefox browser as well.
+This happens because in lang level 3, a :lang value would only match lang attributes if their subtags are exactly the same, without any subtags allowed in between in the lang attribute.
+
+As explained [above](#extended-filtering-and-implicit-wildcard-matching), now the implicit wildcard matching logic is in place, causing a match where it wasn't expected in the ```css3-selectors-lang-014.html``` test.
+
+The failing test test will is replaced by a new test(```css4-selectors-lang-001.html```) that is based on the extented filtering logic.
+
+## Runtime Flag
+
+The proposed cl also introduces the LangExtendedFiltering runtime enabled feature flag that can be used to enable this feature.
